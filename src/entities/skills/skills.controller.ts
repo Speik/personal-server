@@ -1,7 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+
 import { SkillsService } from './skills.service';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('skills')
+@UseGuards(AuthGuard)
 export class SkillsController {
   constructor(private skillsService: SkillsService) {}
 

@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { SkillsModule } from './entities/skills/skills.module';
+import { TelegramModule } from './entities/telegram/telegram.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SkillsModule } from './entities/skills/skills.module';
       },
     }),
     SkillsModule,
+    TelegramModule,
   ],
   controllers: [],
   providers: [],
