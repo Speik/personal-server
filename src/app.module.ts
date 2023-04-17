@@ -1,10 +1,31 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { SkillsModule } from './skills/skills.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot(),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const [user, pass, host, port, dbName] = [
+          configService.get<string>('MONGO_USER'),
+          configService.get<string>('MONGO_PASSWORD'),
+          configService.get<string>('MONGO_HOST'),
+          configService.get<number>('MONGO_PORT'),
+          configService.get<string>('MONGO_DB_NAME'),
+        ];
+
+        return {
+          uri: `mongodb://${user}:${pass}@${host}:${port}/${dbName}`,
+        };
+      },
+    }),
+    SkillsModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
