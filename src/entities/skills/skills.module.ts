@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { SkillsService } from './skills.service';
 import { SkillsController } from './skills.controller';
-import { Skill, SkillSchema } from '../schemas/skill.schema';
+import { Skill, SkillSchema } from '../../schemas/skill.schema';
 
 @Module({
   providers: [SkillsService],
