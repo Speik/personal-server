@@ -2,7 +2,7 @@ import { Ctx, Hears, Help, On, Start, Update } from 'nestjs-telegraf';
 import { TelegrafContext } from './telegram.context';
 
 @Update()
-export class TelegramService {
+export class TelegramListener {
   @Start()
   async start(@Ctx() ctx: TelegrafContext) {
     await ctx.reply('Welcome');
