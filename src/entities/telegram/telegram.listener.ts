@@ -1,16 +1,16 @@
 import { Command, Ctx, Hears, Start, Update } from 'nestjs-telegraf';
 
 import { TelegramContext } from './telegram.context';
-import { KeyboardStrategy } from './keyboard/telegram.keyboard';
+import { TelegramKeyboardStrategy } from './keyboard/telegram.keyboard';
 
 @Update()
 export class TelegramListener {
-  constructor(private keyboardStrategy: KeyboardStrategy) {}
+  public constructor(private keyboardStrategy: TelegramKeyboardStrategy) {}
 
   @Start()
   @Command('menu')
   private async start(@Ctx() ctx: TelegramContext) {
-    this.keyboardStrategy.render(ctx);
+    await this.keyboardStrategy.render(ctx);
   }
 
   /**

@@ -1,4 +1,5 @@
 import { TelegramContext } from '../telegram.context';
+import { TelegramHandler } from '../telegram.handler';
 
 type KeyboardName = 'default' | 'skills' | 'journey' | 'certificates';
 
@@ -24,9 +25,11 @@ const Button = (
   callback: Nullable<Callback> = null,
 ): KeyboardButton => ({ label, redirect, callback });
 
+const Callback = (handler: TelegramHandler, method: string) =>
+  Reflect.get(handler, method).bind(handler);
+
 // Used only for better layout configuration semantics :)
 const Redirect = (keyboardName?: Optional<KeyboardName>) => keyboardName;
-const Callback = (callback: Callback) => callback;
 
 export {
   KeyboardName,
@@ -34,6 +37,6 @@ export {
   KeyboardButton,
   Row,
   Button,
-  Redirect,
   Callback,
+  Redirect,
 };

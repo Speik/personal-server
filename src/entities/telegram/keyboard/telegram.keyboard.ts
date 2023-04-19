@@ -1,15 +1,17 @@
 import { Markup } from 'telegraf';
 import { Injectable, Logger } from '@nestjs/common';
 
-import { TelegramContext } from '../telegram.context';
 import { KeyboardButton, KeyboardLayout, KeyboardName } from './declarations';
 
-@Injectable()
-class KeyboardStrategy {
-  private keyboards: KeyboardLayout[] = [];
+import { TelegramContext } from '../telegram.context';
+import { TelegramHandler } from '../telegram.handler';
 
-  public constructor(private logger: Logger) {
-    this.registerKeyboards();
+@Injectable()
+export class TelegramKeyboardStrategy {
+  private staticKeyboards: KeyboardLayout[] = [];
+
+  public constructor(private handler: TelegramHandler, private logger: Logger) {
+    this.registerStaticKeyboards(handler);
   }
 
   public async handleMenuClick(
@@ -24,7 +26,7 @@ class KeyboardStrategy {
     if (!clickedButton) return false;
 
     if (redirectPath) this.renderKeyboard(redirectPath, ctx);
-    if (callback) callback.call(null, ctx);
+    if (callback) callback.call(this.handler, ctx);
 
     return true;
   }
@@ -45,19 +47,6 @@ class KeyboardStrategy {
     ctx.replyWithHTML(targetKeyboard.message, result);
   }
 
-  private async registerKeyboards(): Promise<void> {
-    const layouts = await import('./layouts');
-
-    Object.values(layouts).forEach((layout) => {
-      this.keyboards.push(layout);
-
-      this.logger.log(
-        `Registered Telegram keyboard layout - '${layout.name}'`,
-        'Telegram',
-      );
-    });
-  }
-
   private parseLabels(keyboard: KeyboardLayout): string[][] {
     return keyboard.rows.map((row) => row.map(({ label }) => label));
   }
@@ -70,7 +59,7 @@ class KeyboardStrategy {
   }
 
   private getKeyboardByButtonLabel(message: string): Optional<KeyboardLayout> {
-    return this.keyboards.find((keyboard) =>
+    return this.staticKeyboards.find((keyboard) =>
       Boolean(this.getButtonByLabel(keyboard, message)),
     );
   }
@@ -78,8 +67,24 @@ class KeyboardStrategy {
   private getKeyboardByName(
     keyboardName: KeyboardName,
   ): Optional<KeyboardLayout> {
-    return this.keyboards.find((keyboard) => keyboard.name === keyboardName);
+    return this.staticKeyboards.find(
+      (keyboard) => keyboard.name === keyboardName,
+    );
+  }
+
+  private async registerStaticKeyboards(
+    handler: TelegramHandler,
+  ): Promise<void> {
+    const staticKeyboards = await import('./layouts');
+
+    Object.values(staticKeyboards).forEach((keyboardConstructor) => {
+      const keyboard: KeyboardLayout = keyboardConstructor(handler);
+
+      this.staticKeyboards.push(keyboard);
+      this.logger.log(
+        `Registered static keyboard '${keyboard.name}'`,
+        'Telegram',
+      );
+    });
   }
 }
-
-export { KeyboardStrategy };
