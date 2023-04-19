@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { TelegramListener } from './telegram.service';
+import { TelegramListener } from './telegram.listener';
+import { KeyboardStrategy } from './keyboard/telegram.keyboard';
 
 @Module({
-  providers: [TelegramListener],
+  providers: [TelegramListener, KeyboardStrategy, Logger],
   imports: [
     TelegrafModule.forRootAsync({
       imports: [ConfigModule],

@@ -1,3 +1,3 @@
 import { Scenes } from 'telegraf';
 
-export type TelegrafContext = Scenes.SceneContext;
+export type TelegramContext = Scenes.SceneContext;
