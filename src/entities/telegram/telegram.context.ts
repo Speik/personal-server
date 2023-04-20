@@ -1,3 +1,7 @@
-import { Scenes } from 'telegraf';
+import { Scenes, Context } from 'telegraf';
 
-export type TelegramContext = Scenes.SceneContext;
+const ALLOWED_USERS = [1253711295];
+
+type TelegramContext = Scenes.SceneContext;
+
+export { ALLOWED_USERS, TelegramContext };

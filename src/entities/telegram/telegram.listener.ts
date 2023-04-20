@@ -1,35 +1,37 @@
-import { Command, Ctx, Hears, Start, Update } from 'nestjs-telegraf';
+import { Command, Ctx, Start, Update } from 'nestjs-telegraf';
 
 import { TelegramContext } from './telegram.context';
-import { TelegramKeyboardStrategy } from './keyboard/telegram.keyboard';
+import { TelegramService } from './telegram.service';
 
 @Update()
 export class TelegramListener {
-  public constructor(private keyboardStrategy: TelegramKeyboardStrategy) {}
+  public constructor(private telegramService: TelegramService) {}
 
   @Start()
-  @Command('menu')
   private async start(@Ctx() ctx: TelegramContext) {
-    await this.keyboardStrategy.render(ctx);
+    const {
+      from: { first_name: username },
+    } = ctx;
+
+    await ctx.replyWithHTML(
+      `You've been authenticated ✅ Welcome, <b>${username}</b>!`,
+    );
   }
 
-  /**
-   * There is no ability to add callback data for static keyboard
-   * buttons in Telegraf, so clicking on keyboard button
-   * conciders by Telegraf as plain message
-   */
-  @Hears(/\w/)
-  private async onAnyMessage(@Ctx() ctx: TelegramContext) {
-    const message: string = ctx.message['text'];
+  @Command('whoami')
+  private async onCommandWhoami(@Ctx() ctx: TelegramContext) {
+    const {
+      from: { first_name: name, username, id, language_code: languageCode },
+    } = ctx;
 
-    const isMenuClick = await this.keyboardStrategy.handleMenuClick(
-      message,
-      ctx,
-    );
+    const lines: string[] = [
+      `<b>${name}</b>`,
+      ``,
+      `<b>ID</b> - <code>${id}</code>`,
+      `<b>Username</b> - ${username}`,
+      `<b>Language</b> - ${languageCode}`,
+    ];
 
-    if (!isMenuClick) {
-      await ctx.reply('⚠️ Unknown action ⚠️');
-      return;
-    }
+    await ctx.replyWithHTML(lines.join('\n'));
   }
 }
