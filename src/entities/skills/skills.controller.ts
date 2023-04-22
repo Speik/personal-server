@@ -8,8 +8,13 @@ import { AuthGuard } from 'src/guards/auth.guard';
 export class SkillsController {
   constructor(private skillsService: SkillsService) {}
 
+  @Get('ping')
+  public getPong() {
+    return { ping: 'pong' };
+  }
+
   @Get()
-  getSkills() {
+  public getSkills() {
     return this.skillsService.getSkills();
   }
 }

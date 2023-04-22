@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const authenticationToken = this.configService.get<string>('AUTH_TOKEN');
+    const authenticationToken = this.configService.get<string>('CSRF_TOKEN');
     const hasAuthentication = Reflect.has(
       request.headers,
       AUTHENTICATION_HEADER_NAME,
