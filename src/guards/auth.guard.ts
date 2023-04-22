@@ -10,10 +10,10 @@ import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 
-const AUTHENTICATION_HEADER_NAME = 'x-authentication';
+const AUTHENTICATION_HEADER_NAME = 'x-csrf-token';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class CsrfGuard implements CanActivate {
   constructor(private configService: ConfigService) {}
 
   public canActivate(
@@ -21,18 +21,21 @@ export class AuthGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const authenticationToken = this.configService.get<string>('CSRF_TOKEN');
-    const hasAuthentication = Reflect.has(
+    const csrfToken = this.configService.get<string>('CSRF_TOKEN');
+    const hasCsrfToken = Reflect.has(
       request.headers,
       AUTHENTICATION_HEADER_NAME,
     );
 
-    const isAuthenticated = hasAuthentication
-      ? request.headers[AUTHENTICATION_HEADER_NAME] === authenticationToken
+    const isRequestValid = hasCsrfToken
+      ? request.headers[AUTHENTICATION_HEADER_NAME] === csrfToken
       : false;
 
-    if (!isAuthenticated) {
-      throw new HttpException('Authentication failed', HttpStatus.FORBIDDEN);
+    if (!isRequestValid) {
+      throw new HttpException(
+        'Authentication failed due to CSRF guard has been triggered',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     return true;
