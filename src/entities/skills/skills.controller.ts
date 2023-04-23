@@ -1,20 +1,17 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 
+import { CsrfGuard } from 'src/guards/csrf.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { SkillsService } from './skills.service';
-import { CsrfGuard } from 'src/guards/auth.guard';
+import { Skill } from 'src/schemas/skill.schema';
 
 @Controller('skills')
-@UseGuards(CsrfGuard)
+@UseGuards(CsrfGuard, AuthGuard)
 export class SkillsController {
   constructor(private skillsService: SkillsService) {}
 
-  @Get('ping')
-  public getPong() {
-    return { ping: 'pong' };
-  }
-
   @Get()
-  public getSkills() {
+  public getSkills(): Promise<Skill[]> {
     return this.skillsService.getSkills();
   }
 }

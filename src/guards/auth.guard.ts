@@ -1,43 +1,42 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
-  HttpException,
-  HttpStatus,
+  Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
-
 import { ConfigService } from '@nestjs/config';
-import { Request } from 'express';
-import { Observable } from 'rxjs';
 
-const AUTHENTICATION_HEADER_NAME = 'x-csrf-token';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 
 @Injectable()
-export class CsrfGuard implements CanActivate {
-  constructor(private configService: ConfigService) {}
+export class AuthGuard implements CanActivate {
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
 
-  public canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromHeader(request);
 
-    const csrfToken = this.configService.get<string>('CSRF_TOKEN');
-    const hasCsrfToken = Reflect.has(
-      request.headers,
-      AUTHENTICATION_HEADER_NAME,
-    );
+    if (!token) {
+      throw new UnauthorizedException('Authentication failed');
+    }
 
-    const isRequestValid = hasCsrfToken
-      ? request.headers[AUTHENTICATION_HEADER_NAME] === csrfToken
-      : false;
-
-    if (!isRequestValid) {
-      throw new HttpException(
-        'Authentication failed due to CSRF guard has been triggered',
-        HttpStatus.FORBIDDEN,
-      );
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
+    } catch {
+      throw new UnauthorizedException('JWT expired');
     }
 
     return true;
+  }
+
+  private extractTokenFromHeader(request: Request): Nullable<string> {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : null;
   }
 }

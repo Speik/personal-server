@@ -4,10 +4,15 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { SkillsModule } from './entities/skills/skills.module';
 import { TelegramModule } from './entities/telegram/telegram.module';
+import { UsersModule } from './entities/users/users.module';
+import { AppController } from './app.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    JwtModule.register({}),
+
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -25,10 +30,11 @@ import { TelegramModule } from './entities/telegram/telegram.module';
         };
       },
     }),
+
     SkillsModule,
     TelegramModule,
+    UsersModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
 })
 export class AppModule {}
