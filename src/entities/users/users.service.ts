@@ -50,7 +50,7 @@ export class UsersService {
     });
 
     return {
-      access_token: jwt,
+      access_token: `Bearer ${jwt}`,
       id: user.id,
       name: user.name,
     };
