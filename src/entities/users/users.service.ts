@@ -5,8 +5,10 @@ import { ConfigService } from '@nestjs/config';
 
 import { Model } from 'mongoose';
 import { hash } from 'bcrypt';
+import { ObjectId } from 'bson';
 
 import { User, UserDocument } from 'src/schemas/user.schema';
+import { CleanupDocuments } from 'src/decorators/cleanup-documents.decorator';
 import { AuthorizedUser } from './users.model';
 
 const PERSISTENT_JWT_TTL = '3d';
@@ -19,8 +21,17 @@ export class UsersService {
     private configService: ConfigService,
   ) {}
 
+  public async getUserById(userId: string): Promise<User> {
+    return await this.userModel.findOne({ _id: new ObjectId(userId) });
+  }
+
   public async getUserByName(user: Partial<User>): Promise<User> {
     return this.userModel.findOne({ name: user.name.trim() }).exec();
+  }
+
+  @CleanupDocuments()
+  public async getUsers(): Promise<User[]> {
+    return await this.userModel.find().sort({ name: 1 });
   }
 
   public async createUser(user: Partial<User>): Promise<User> {
@@ -30,6 +41,22 @@ export class UsersService {
     return this.userModel.create({
       name: name.trim(),
       password: passwordHash,
+    });
+  }
+
+  public async updateUser(id: string, user: Partial<User>): Promise<void> {
+    const { password, ...updatedUser } = user;
+
+    if (password) {
+      (<User>updatedUser).password = await hash(password, 12);
+    }
+
+    await this.userModel.updateOne({ _id: new ObjectId(id) }, updatedUser);
+  }
+
+  public async deleteUser({ id }: Partial<User>): Promise<void> {
+    await this.userModel.deleteOne({
+      _id: new ObjectId(id),
     });
   }
 

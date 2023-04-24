@@ -13,9 +13,10 @@ import {
 
 import { CsrfGuard } from 'src/guards/csrf.guard';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { Throttle } from 'src/decorators/throttle.decorator';
+
 import { SkillsService } from './skills.service';
 import { Skill } from 'src/schemas/skill.schema';
-import { Throttle } from 'src/decorators/throttle.decorator';
 import { SkillDto } from './skills.model';
 
 @Controller('skills')
@@ -53,13 +54,22 @@ export class SkillsController {
       throw new NotFoundException('Skill not found');
     }
 
+    const skillByName = await this.skillsService.getSkillByName({
+      ...skill,
+      name: payload.name.trim(),
+    });
+
+    if (skillByName) {
+      throw new BadRequestException('Skill with such name already exists');
+    }
+
     return this.skillsService.updateSkill(id, payload);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  public async handleSkillDelete(@Param('id') skillId: string): Promise<void> {
-    const skill = await this.skillsService.getSkillById(skillId);
+  public async handleSkillDelete(@Param('id') id: string): Promise<void> {
+    const skill = await this.skillsService.getSkillById(id);
 
     if (!skill) {
       throw new NotFoundException('Skill not found');

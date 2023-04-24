@@ -12,8 +12,7 @@ class UserDto {
   public name: string;
 
   @IsString()
-  @IsNotEmpty()
-  public password: string;
+  public password?: string;
 }
 
 export { UserDto, AuthorizedUser };
