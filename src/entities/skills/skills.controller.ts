@@ -1,10 +1,22 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { CsrfGuard } from 'src/guards/csrf.guard';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { SkillsService } from './skills.service';
 import { Skill } from 'src/schemas/skill.schema';
 import { Throttle } from 'src/decorators/throttle.decorator';
+import { SkillDto } from './skills.model';
 
 @Controller('skills')
 @UseGuards(CsrfGuard, AuthGuard)
@@ -13,7 +25,43 @@ export class SkillsController {
 
   @Get()
   @Throttle(1000)
-  public getSkills(): Promise<Skill[]> {
+  public handleGetSkills(): Promise<Skill[]> {
     return this.skillsService.getSkills();
+  }
+
+  @Post()
+  public async handleSkillCreate(@Body() payload: SkillDto): Promise<Skill> {
+    const skill = await this.skillsService.getSkillByName(payload);
+
+    if (skill) {
+      throw new BadRequestException('Skill with such name already exists');
+    }
+
+    return this.skillsService.createSkill(payload);
+  }
+
+  @Patch(':id')
+  public async handleSkillUpdate(
+    @Param('id') id: string,
+    @Body() payload: SkillDto,
+  ): Promise<void> {
+    const skill = await this.skillsService.getSkillById(id);
+
+    if (!skill) {
+      throw new NotFoundException('Skill not found');
+    }
+
+    return this.skillsService.updateSkill(id, payload);
+  }
+
+  @Delete(':id')
+  public async handleSkillDelete(@Param('id') skillId: string): Promise<void> {
+    const skill = await this.skillsService.getSkillById(skillId);
+
+    if (!skill) {
+      throw new NotFoundException('Skill not found');
+    }
+
+    return this.skillsService.deleteSkill(skill);
   }
 }
