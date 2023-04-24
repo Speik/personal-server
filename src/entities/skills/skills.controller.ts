@@ -19,7 +19,7 @@ import { Throttle } from 'src/decorators/throttle.decorator';
 import { SkillDto } from './skills.model';
 
 @Controller('skills')
-@UseGuards(CsrfGuard, AuthGuard)
+@UseGuards(CsrfGuard)
 export class SkillsController {
   constructor(private skillsService: SkillsService) {}
 
@@ -30,6 +30,7 @@ export class SkillsController {
   }
 
   @Post()
+  @UseGuards(AuthGuard)
   public async handleSkillCreate(@Body() payload: SkillDto): Promise<Skill> {
     const skill = await this.skillsService.getSkillByName(payload);
 
@@ -41,6 +42,7 @@ export class SkillsController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard)
   public async handleSkillUpdate(
     @Param('id') id: string,
     @Body() payload: SkillDto,
@@ -55,6 +57,7 @@ export class SkillsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
   public async handleSkillDelete(@Param('id') skillId: string): Promise<void> {
     const skill = await this.skillsService.getSkillById(skillId);
 

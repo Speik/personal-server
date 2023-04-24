@@ -13,20 +13,20 @@ export class SkillsService {
   ) {}
 
   public async getSkillById(skillId: string): Promise<Skill> {
-    return this.skillModel.findOne({ _id: new ObjectId(skillId) });
+    return await this.skillModel.findOne({ _id: new ObjectId(skillId) });
   }
 
   public async getSkillByName(skill: Partial<Skill>): Promise<Skill> {
-    return this.skillModel.findOne({ name: skill.name.trim() });
+    return await this.skillModel.findOne({ name: skill.name.trim() });
   }
 
   @CleanupDocuments()
-  public getSkills(): Promise<Skill[]> {
-    return this.skillModel.find().sort({ proficiency: -1 });
+  public async getSkills(): Promise<Skill[]> {
+    return await this.skillModel.find().sort({ proficiency: -1 });
   }
 
-  public createSkill(skill: Partial<Skill>): Promise<Skill> {
-    return this.skillModel.create({
+  public async createSkill(skill: Partial<Skill>): Promise<Skill> {
+    return await this.skillModel.create({
       name: skill.name.trim(),
       proficiency: skill.proficiency,
     });
