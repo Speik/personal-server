@@ -7,6 +7,7 @@ import { TelegramModule } from './entities/telegram/telegram.module';
 import { UsersModule } from './entities/users/users.module';
 import { AppController } from './app.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { JourneyModule } from './entities/journey/journey.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { JwtModule } from '@nestjs/jwt';
     SkillsModule,
     TelegramModule,
     UsersModule,
+    JourneyModule,
   ],
   controllers: [AppController],
 })
