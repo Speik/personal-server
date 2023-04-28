@@ -8,9 +8,9 @@ export abstract class BaseSchema {
     return this._id.toHexString();
   }
 
-  @Prop({ default: new Date() })
+  @Prop({ default: Date.now })
   public createdAt?: Date;
 
-  @Prop({ default: new Date() })
+  @Prop({ default: Date.now })
   public updatedAt?: Date;
 }

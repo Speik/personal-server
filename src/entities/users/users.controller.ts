@@ -31,8 +31,8 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  @Throttle(1000)
   @UseGuards(AuthGuard)
+  @Throttle(1000)
   public handleGetUsers(): Promise<User[]> {
     return this.usersService.getUsers();
   }
