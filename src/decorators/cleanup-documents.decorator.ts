@@ -1,6 +1,6 @@
 const cleanupMongoDocument = (document: any) => {
   const id = document.id;
-  const { _id, _v, ...cleanDocument } = document._doc;
+  const { _id, __v, ...cleanDocument } = document._doc;
 
   return { id, ...cleanDocument };
 };

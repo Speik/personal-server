@@ -12,6 +12,7 @@ import { JourneyModule } from './entities/journey/journey.module';
 import { StorageModule } from './entities/storage/storage.module';
 
 import { getPublicPath } from './utils';
+import { CertificatesModule } from './entities/certificates/certificates.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { getPublicPath } from './utils';
     UsersModule,
     JourneyModule,
     StorageModule,
+    CertificatesModule,
   ],
   controllers: [AppController],
 })
