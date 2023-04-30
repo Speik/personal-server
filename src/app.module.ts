@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule } from '@nestjs/jwt';
+
+import { join } from 'path';
 
 import { SkillsModule } from './entities/skills/skills.module';
 import { TelegramModule } from './entities/telegram/telegram.module';
 import { UsersModule } from './entities/users/users.module';
 import { AppController } from './app.controller';
-import { JwtModule } from '@nestjs/jwt';
 import { JourneyModule } from './entities/journey/journey.module';
 
 @Module({
@@ -36,6 +39,11 @@ import { JourneyModule } from './entities/journey/journey.module';
     TelegramModule,
     UsersModule,
     JourneyModule,
+
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'storage'),
+      exclude: ['/api/(.*)'],
+    }),
   ],
   controllers: [AppController],
 })
