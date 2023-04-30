@@ -2,7 +2,7 @@
 /dist
 /node_modules
 
-/storage
+/public
 
 # Configuration files
 .env

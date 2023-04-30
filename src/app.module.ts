@@ -4,13 +4,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 
-import { join } from 'path';
-
 import { SkillsModule } from './entities/skills/skills.module';
 import { TelegramModule } from './entities/telegram/telegram.module';
 import { UsersModule } from './entities/users/users.module';
 import { AppController } from './app.controller';
 import { JourneyModule } from './entities/journey/journey.module';
+import { StorageModule } from './entities/storage/storage.module';
+
+import { getPublicPath } from './utils';
 
 @Module({
   imports: [
@@ -35,15 +36,16 @@ import { JourneyModule } from './entities/journey/journey.module';
       },
     }),
 
+    ServeStaticModule.forRoot({
+      rootPath: getPublicPath(),
+      exclude: ['/api/(.*)'],
+    }),
+
     SkillsModule,
     TelegramModule,
     UsersModule,
     JourneyModule,
-
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'storage'),
-      exclude: ['/api/(.*)'],
-    }),
+    StorageModule,
   ],
   controllers: [AppController],
 })
