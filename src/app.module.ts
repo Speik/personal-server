@@ -15,6 +15,7 @@ import { getPublicPath } from './utils';
 import { CertificatesModule } from './entities/certificates/certificates.module';
 import { CvModule } from './entities/cv/cv.module';
 import { MessagesModule } from './entities/messages/messages.module';
+import { GuestModule } from './entities/guest/guest.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { MessagesModule } from './entities/messages/messages.module';
     CertificatesModule,
     CvModule,
     MessagesModule,
+    GuestModule,
   ],
   controllers: [AppController],
 })
