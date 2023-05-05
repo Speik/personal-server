@@ -7,22 +7,20 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { Throttle } from 'src/decorators/throttle.decorator';
 
-import { AuthGuard } from 'src/guards/auth.guard';
-import { CsrfGuard } from 'src/guards/csrf.guard';
+import { Public } from 'src/decorators/pulic.decorator';
 
 import { CertificatesService } from './certificates.service';
 import { Certificate } from 'src/schemas/certificate.schema';
 import { CertificateDto } from './certificates.model';
 
 @Controller('certificates')
-@UseGuards(CsrfGuard)
 export class CertificatesController {
   constructor(private certificatesService: CertificatesService) {}
 
+  @Public()
   @Get()
   @Throttle(1000)
   public handleGetCertificates(): Promise<Certificate[]> {
@@ -30,7 +28,6 @@ export class CertificatesController {
   }
 
   @Post()
-  @UseGuards(AuthGuard)
   public async handleCertificateCreate(
     @Body() payload: CertificateDto,
   ): Promise<Certificate> {
@@ -38,7 +35,6 @@ export class CertificatesController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard)
   public async handleCertificateUpdate(
     @Param('id') id: string,
     @Body() payload: Certificate,
@@ -53,7 +49,6 @@ export class CertificatesController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
   public async handleCertificateDelete(@Param('id') id: string): Promise<void> {
     const certificate = await this.certificatesService.getCertificateById(id);
 

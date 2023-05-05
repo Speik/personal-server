@@ -8,11 +8,9 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 
-import { CsrfGuard } from 'src/guards/csrf.guard';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { Public } from 'src/decorators/pulic.decorator';
 import { Throttle } from 'src/decorators/throttle.decorator';
 
 import { SkillsService } from './skills.service';
@@ -20,10 +18,10 @@ import { Skill } from 'src/schemas/skill.schema';
 import { SkillDto } from './skills.model';
 
 @Controller('skills')
-@UseGuards(CsrfGuard)
 export class SkillsController {
   constructor(private skillsService: SkillsService) {}
 
+  @Public()
   @Get()
   @Throttle(1000)
   public handleGetSkills(): Promise<Skill[]> {
@@ -31,7 +29,6 @@ export class SkillsController {
   }
 
   @Post()
-  @UseGuards(AuthGuard)
   public async handleSkillCreate(@Body() payload: SkillDto): Promise<Skill> {
     const skill = await this.skillsService.getSkillByName(payload);
 
@@ -43,7 +40,6 @@ export class SkillsController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard)
   public async handleSkillUpdate(
     @Param('id') id: string,
     @Body() payload: SkillDto,
@@ -67,7 +63,6 @@ export class SkillsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
   public async handleSkillDelete(@Param('id') id: string): Promise<void> {
     const skill = await this.skillsService.getSkillById(id);
 

@@ -1,13 +1,11 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-
-import { CsrfGuard } from './guards/csrf.guard';
-import { AuthGuard } from './guards/auth.guard';
+import { Controller, Get } from '@nestjs/common';
+import { Public } from './decorators/pulic.decorator';
 
 @Controller()
-@UseGuards(CsrfGuard, AuthGuard)
 export class AppController {
+  @Public()
   @Get('ping')
-  public getPong(): string {
+  public handlePing(): string {
     return 'pong';
   }
 }

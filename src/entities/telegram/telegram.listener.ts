@@ -1,14 +1,10 @@
 import { Command, Ctx, Start, Update } from 'nestjs-telegraf';
-
 import { TelegramContext } from './telegram.context';
-import { TelegramService } from './telegram.service';
 
 @Update()
 export class TelegramListener {
-  public constructor(private telegramService: TelegramService) {}
-
   @Start()
-  private async start(@Ctx() ctx: TelegramContext) {
+  public async handleStart(@Ctx() ctx: TelegramContext) {
     const {
       from: { first_name: username },
     } = ctx;
@@ -19,7 +15,7 @@ export class TelegramListener {
   }
 
   @Command('whoami')
-  private async onCommandWhoami(@Ctx() ctx: TelegramContext) {
+  public async handleCommandWhoami(@Ctx() ctx: TelegramContext) {
     const {
       from: { first_name: name, username, id, language_code: languageCode },
     } = ctx;

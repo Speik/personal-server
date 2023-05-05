@@ -1,32 +1,26 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  Ip,
-  UseGuards,
-} from '@nestjs/common';
+import { BadRequestException, Controller, Get, Ip } from '@nestjs/common';
 
-import { CsrfGuard } from 'src/guards/csrf.guard';
-import { AuthGuard } from 'src/guards/auth.guard';
-
+import { Public } from 'src/decorators/pulic.decorator';
 import { IUserAgent, UserAgent } from 'src/decorators/user-agent.decorator';
 import { Throttle } from 'src/decorators/throttle.decorator';
 
 import { GuestService } from './guest.service';
 import { Guest } from 'src/schemas/guest.schema';
 
+const POSTMAN_IP = '::1';
+
 @Controller('guests')
-@UseGuards(CsrfGuard)
 export class GuestController {
   public constructor(private guestService: GuestService) {}
 
+  @Public()
   @Get('visit')
   public async handleVisit(
     @UserAgent() userAgent: IUserAgent,
     @Ip() ip: string,
   ): Promise<void> {
     // If Postman request
-    if (ip === '::1') {
+    if (ip === POSTMAN_IP) {
       throw new BadRequestException("Visit can't be recorded");
     }
 
@@ -45,7 +39,6 @@ export class GuestController {
   }
 
   @Get()
-  @UseGuards(AuthGuard)
   @Throttle(1000)
   public async handleGetGuests(): Promise<Guest[]> {
     return this.guestService.getGuests();

@@ -6,20 +6,16 @@ import {
   Param,
   Post,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { AuthGuard } from 'src/guards/auth.guard';
-import { CsrfGuard } from 'src/guards/csrf.guard';
 import { Throttle } from 'src/decorators/throttle.decorator';
 
 import { StorageItem } from 'src/schemas/storage.schema';
 import { StorageService } from './storage.service';
 
 @Controller('storage')
-@UseGuards(CsrfGuard, AuthGuard)
 export class StorageController {
   constructor(private storageService: StorageService) {}
 

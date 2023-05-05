@@ -9,11 +9,9 @@ import {
   Post,
   Res,
   StreamableFile,
-  UseGuards,
 } from '@nestjs/common';
 
-import { CsrfGuard } from 'src/guards/csrf.guard';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { Public } from 'src/decorators/pulic.decorator';
 import { Throttle } from 'src/decorators/throttle.decorator';
 
 import { getPublicPath } from 'src/utils';
@@ -23,10 +21,10 @@ import { Cv } from 'src/schemas/cv.schema';
 import { CvDto } from './cv.model';
 
 @Controller('cv')
-@UseGuards(CsrfGuard)
 export class CvController {
   public constructor(private cvService: CvService) {}
 
+  @Public()
   @Get('download')
   public async handleDownloadCv(
     @Res({ passthrough: true }) res: Response,
@@ -45,14 +43,12 @@ export class CvController {
   }
 
   @Get()
-  @UseGuards(AuthGuard)
   @Throttle(1000)
   public handleGetCv(): Promise<Cv> {
     return this.cvService.getCv();
   }
 
   @Post()
-  @UseGuards(AuthGuard)
   public handleUpdateCv(@Body() payload: CvDto): Promise<void> {
     return this.cvService.updateCv(payload);
   }

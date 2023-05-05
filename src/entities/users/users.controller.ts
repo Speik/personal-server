@@ -9,7 +9,6 @@ import {
   HttpStatus,
   ParseBoolPipe,
   Post,
-  UseGuards,
   Get,
   Patch,
   Param,
@@ -17,8 +16,7 @@ import {
   Delete,
 } from '@nestjs/common';
 
-import { CsrfGuard } from 'src/guards/csrf.guard';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { Public } from 'src/decorators/pulic.decorator';
 import { Throttle } from 'src/decorators/throttle.decorator';
 
 import { UsersService } from './users.service';
@@ -26,24 +24,16 @@ import { AuthorizedUser, UserDto } from './users.model';
 import { User } from 'src/schemas/user.schema';
 
 @Controller('users')
-@UseGuards(CsrfGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  @UseGuards(AuthGuard)
   @Throttle(1000)
   public handleGetUsers(): Promise<User[]> {
     return this.usersService.getUsers();
   }
 
-  /**
-   * It's not a mistake!
-   *
-   * Users can't sign up personally
-   */
   @Post('signup')
-  @UseGuards(AuthGuard)
   public async handleSignup(@Body() payload: UserDto): Promise<User> {
     const existentUser = await this.usersService.getUserByName(payload);
 
@@ -59,7 +49,6 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard)
   public async handleUserUpdate(
     @Param('id') id: string,
     @Body() payload: UserDto,
@@ -83,7 +72,6 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
   public async handleUserDelete(@Param('id') id: string): Promise<void> {
     const user = await this.usersService.getUserById(id);
 
@@ -94,6 +82,7 @@ export class UsersController {
     return this.usersService.deleteUser(user);
   }
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
   public async handleLogin(
