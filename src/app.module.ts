@@ -10,12 +10,13 @@ import { UsersModule } from './entities/users/users.module';
 import { AppController } from './app.controller';
 import { JourneyModule } from './entities/journey/journey.module';
 import { StorageModule } from './entities/storage/storage.module';
-
-import { getPublicPath } from './utils';
 import { CertificatesModule } from './entities/certificates/certificates.module';
 import { CvModule } from './entities/cv/cv.module';
 import { MessagesModule } from './entities/messages/messages.module';
 import { GuestModule } from './entities/guest/guest.module';
+import { CsrfModule } from './entities/csrf/csrf.module';
+
+import { getPublicPath } from './utils';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { GuestModule } from './entities/guest/guest.module';
     CvModule,
     MessagesModule,
     GuestModule,
+    CsrfModule,
   ],
   controllers: [AppController],
 })

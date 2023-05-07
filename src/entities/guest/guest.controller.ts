@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Ip } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Ip, Post } from '@nestjs/common';
 
 import { Public } from 'src/decorators/pulic.decorator';
 import { IUserAgent, UserAgent } from 'src/decorators/user-agent.decorator';
@@ -13,8 +13,14 @@ const POSTMAN_IP = '::1';
 export class GuestController {
   public constructor(private guestService: GuestService) {}
 
+  @Get()
+  @Throttle(1000)
+  public async handleGetGuests(): Promise<Guest[]> {
+    return this.guestService.getGuests();
+  }
+
   @Public()
-  @Get('visit')
+  @Post('visit')
   public async handleVisit(
     @UserAgent() userAgent: IUserAgent,
     @Ip() ip: string,
@@ -36,11 +42,5 @@ export class GuestController {
       browser: userAgent.browser.name,
       os: userAgent.os.name,
     });
-  }
-
-  @Get()
-  @Throttle(1000)
-  public async handleGetGuests(): Promise<Guest[]> {
-    return this.guestService.getGuests();
   }
 }
