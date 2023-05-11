@@ -42,10 +42,15 @@ export class TelegramService {
   }
 
   private parseVisitMessage(guest: Partial<Guest>): string {
+    const { city, country, flag, userAgent } = guest;
+
+    const browser = guest.browser ?? 'Unknown browser';
+    const os = guest.os ?? 'Unknown OS';
+
     const result = [
-      `👀 Someone from <b>${guest.city}, ${guest.country}</b> visited website!`,
-      `🖥 ${guest.browser ?? 'Unknown browser'} : ${guest.os ?? 'Unknown OS'}`,
-      `⚡️ <code>${guest.userAgent}</code>`,
+      `👀 Someone from <b>${city}, ${country} ${flag}</b> visited website!`,
+      `🖥 ${browser} : ${os}`,
+      `⚡️ <code>${userAgent}</code>`,
     ];
 
     return result.join('\n');
