@@ -4,6 +4,7 @@ import { Telegraf } from 'telegraf';
 
 import { MessageDto } from '../messages/messages.model';
 import { ALLOWED_USERS, TelegramContext } from './telegram.context';
+import { Guest } from 'src/schemas/guest.schema';
 
 @Injectable()
 export class TelegramService {
@@ -11,9 +12,17 @@ export class TelegramService {
 
   public async notifyIncomingMessage(message: MessageDto): Promise<void> {
     const telegramMessage = this.parseIncomingMessage(message);
+    await this.sendMessage(telegramMessage);
+  }
 
+  public async notifyNewVisit(guest: Partial<Guest>): Promise<void> {
+    const visitMessage = this.parseVisitMessage(guest);
+    await this.sendMessage(visitMessage);
+  }
+
+  private async sendMessage(message: string): Promise<void> {
     const responses = ALLOWED_USERS.map((userId) => {
-      return this.bot.telegram.sendMessage(userId, telegramMessage, {
+      return this.bot.telegram.sendMessage(userId, message, {
         parse_mode: 'HTML',
       });
     });
@@ -27,6 +36,16 @@ export class TelegramService {
       `📫 <code>${message.email}</code>`,
       '',
       `💬 ${message.text}`,
+    ];
+
+    return result.join('\n');
+  }
+
+  private parseVisitMessage(guest: Partial<Guest>): string {
+    const result = [
+      `👀 Someone from <b>${guest.city}, ${guest.country}</b> visited website!`,
+      `🖥 ${guest.browser ?? 'Unknown browser'} : ${guest.os ?? 'Unknown OS'}`,
+      `⚡️ <code>${guest.userAgent}</code>`,
     ];
 
     return result.join('\n');

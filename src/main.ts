@@ -31,7 +31,11 @@ async function bootstrap() {
 
   app.enableCors({
     exposedHeaders: ['Content-Disposition', 'Set-Cookie'],
-    origin: ['http://192.168.1.9:4201', `http://192.168.1.9:${appPort}`],
+    origin: [
+      'http://192.168.1.9:4201',
+      'http://192.168.1.9:4200',
+      `http://192.168.1.9:${appPort}`,
+    ],
     credentials: true,
     allowedHeaders: [
       'Authorization',

@@ -7,9 +7,11 @@ import { GuestController } from './guest.controller';
 import { GuestService } from './guest.service';
 import { Guest, GuestSchema } from 'src/schemas/guest.schema';
 
+import { TelegramService } from '../telegram/telegram.service';
+
 @Module({
   controllers: [GuestController],
-  providers: [GuestService],
+  providers: [GuestService, TelegramService],
   imports: [
     MongooseModule.forFeature([{ name: Guest.name, schema: GuestSchema }]),
     ConfigModule,
