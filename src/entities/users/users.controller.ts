@@ -60,11 +60,10 @@ export class UsersController {
     }
 
     const userByName = await this.usersService.getUserByName({
-      ...user,
       name: payload.name.trim(),
     });
 
-    if (userByName) {
+    if (userByName && userByName.id !== user.id) {
       throw new BadRequestException('User with such name already exists');
     }
 

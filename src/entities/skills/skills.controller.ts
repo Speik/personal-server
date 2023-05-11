@@ -51,11 +51,10 @@ export class SkillsController {
     }
 
     const skillByName = await this.skillsService.getSkillByName({
-      ...skill,
       name: payload.name.trim(),
     });
 
-    if (skillByName) {
+    if (skillByName && skillByName.id !== skill.id) {
       throw new BadRequestException('Skill with such name already exists');
     }
 
